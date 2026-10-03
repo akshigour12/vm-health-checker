@@ -1,304 +1,195 @@
-# VM Health Checker - Advanced Edition
+# VM Health Checker
 
-A comprehensive Bash script for monitoring virtual machine health with support for advanced features like JSON output, custom thresholds, email alerts, logging, trending analysis, and webhook integrations.
+A lightweight Bash script for checking the health of a Linux virtual machine. It inspects core system resources like CPU usage, memory consumption, disk usage, and swap usage, and reports whether the VM is healthy, degraded, or in a critical state.
 
-## 🌟 Features
+It also supports an `explain` mode that prints a more detailed summary of the health check and what the results mean.
 
-### Core Monitoring
-- ✅ CPU load and utilization tracking
-- ✅ Memory usage and available resources
-- ✅ Disk space usage on root filesystem
-- ✅ Swap memory usage
-- ✅ System uptime and process count
-- ✅ Network interface detection
-- ✅ System temperature monitoring
-- ✅ File descriptor usage tracking
-- ✅ Core process monitoring
+## Features
 
-### Advanced Analytics & Reporting
-- 📊 **Trending Analysis** - Track metrics over 7/30/90 days
-- 📈 **Performance Comparison** - Compare against historical averages
-- 📉 **Health History** - View status history over time
-- 🔬 **Snapshot Mode** - Automatic data collection for trending
-- 📄 **HTML Reports** - Beautiful HTML reports with charts
-- 🎨 **Interactive Dashboard** - Visual metric representation
+- CPU load monitoring
+- Memory usage check
+- Disk usage check
+- Swap usage check
+- Root filesystem accessibility check
+- Core system process validation
+- Detailed `explain` output
+- JSON output support
+- Logging support
+- Custom thresholds
+- Email and webhook alerts
+- HTML and snapshot-based reporting
 
-### Integration & Alerts
-- 📧 **Email Alerts** - Send notifications on issues
-- 🔔 **Webhook Integration** - Slack/Teams/Discord alerts
-- 📝 **Logging** - Persistent file logging
-- 📦 **JSON Export** - Structured data for APIs
-- 🔧 **Custom Thresholds** - Configurable alert levels
-- 📋 **Report Generation** - Save timestamped reports
-
-### Smart Features
-- 🎯 **Multi-level Alerts** - HEALTHY, DEGRADED, CRITICAL
-- 🎨 **Color-Coded Output** - Easy-to-read terminal display
-- 📊 **Exit Codes** - Proper codes for scripting (0/1/2/3)
-- 🔄 **Auto-Snapshot** - Automatic data collection
-- 🧪 **Load Classification** - Normal/High load detection
-
-## Installation
+## Quick start
 
 ```bash
-git clone https://github.com/akshigour12/vm-health-checker.git
-cd vm-health-checker
 chmod +x vm_health_check.sh
-```
-
-## Quick Start
-
-```bash
-# Simple health check
 ./vm_health_check.sh
-
-# With detailed explanation
 ./vm_health_check.sh explain
+```
 
-# JSON output
+## Usage
+
+```bash
+./vm_health_check.sh
+./vm_health_check.sh explain
 ./vm_health_check.sh --json
-
-# With all advanced features
-./vm_health_check.sh \
-  --json \
-  --snapshots /var/snapshots \
-  --log /var/log/vm_health.log \
-  --email admin@example.com \
-  --alert-webhook https://hooks.slack.com/... \
-  --threshold cpu=75 memory=85 disk=85
-```
-
-## Advanced Usage
-
-### 1. Trending Analysis
-
-```bash
-# Analyze trends over 7 days (default)
-./vm_health_check.sh --snapshots /var/snapshots --trending
-
-# 30-day trend analysis
-./vm_health_check.sh --snapshots /var/snapshots --trending 30d
-
-# 90-day trend analysis
-./vm_health_check.sh --snapshots /var/snapshots --trending 90d
-```
-
-Output shows:
-- Average memory usage
-- Peak memory usage
-- Average disk usage
-- Peak disk usage
-- Number of samples collected
-
-### 2. Snapshot Mode for Data Collection
-
-```bash
-# Collect snapshots automatically
-./vm_health_check.sh --snapshots /var/snapshots
-
-# Run in cron every 5 minutes
-*/5 * * * * /path/to/vm_health_check.sh --snapshots /var/snapshots
-
-# Then analyze trends later
-./vm_health_check.sh --snapshots /var/snapshots --trending 7d
-```
-
-### 3. Webhook Integration (Slack/Teams/Discord)
-
-```bash
-# Send alerts to Slack
-./vm_health_check.sh --alert-webhook https://hooks.slack.com/services/YOUR/WEBHOOK/URL
-
-# Combine with other features
-./vm_health_check.sh \
-  --alert-webhook https://hooks.slack.com/services/YOUR/WEBHOOK/URL \
-  --snapshots /var/snapshots \
-  --threshold memory=75
-```
-
-### 4. Custom Thresholds
-
-```bash
-# Set individual thresholds
-./vm_health_check.sh --threshold cpu=70 --threshold memory=80 --threshold disk=85
-
-# Lower thresholds for stricter monitoring
-./vm_health_check.sh --threshold cpu=60 memory=70 disk=75 swap=40
-```
-
-### 5. Email Alerts
-
-```bash
-# Send email when issues detected
-./vm_health_check.sh --email admin@example.com
-
-# With snapshot and logging
-./vm_health_check.sh \
-  --email admin@example.com \
-  --log /var/log/vm_health.log \
-  --snapshots /var/snapshots
-```
-
-### 6. Logging
-
-```bash
-# Log all checks to file
 ./vm_health_check.sh --log /var/log/vm_health.log
-
-# View logs
-tail -f /var/log/vm_health.log
-
-# Parse logs for specific events
-grep "CRITICAL" /var/log/vm_health.log
-grep "Status:" /var/log/vm_health.log
+./vm_health_check.sh --threshold cpu=75 memory=85 disk=85 swap=40
+./vm_health_check.sh --email admin@example.com
+./vm_health_check.sh --help
 ```
 
-### 7. Report Generation
+## What the script checks
+
+The script evaluates the following indicators:
+
+- CPU load average
+- Memory utilization percentage
+- Disk usage on `/`
+- Swap usage percentage
+- Root filesystem accessibility
+- Basic system process health
+- Optional additional metrics such as temperature and file descriptor usage
+
+## Explain mode
+
+When you pass `explain` as a command-line argument, the script prints a richer explanation of the current health state and how to interpret the results.
 
 ```bash
-# Save JSON reports
-./vm_health_check.sh --json --output-dir /var/reports/vm_health
-
-# Generate HTML reports
-./vm_health_check.sh --detailed-report --output-dir /var/reports
-
-# List all reports
-ls -la /var/reports/vm_health/
+./vm_health_check.sh explain
 ```
 
-### 8. Performance Comparison
+Example output:
 
-```bash
-# Compare current metrics against historical data
-./vm_health_check.sh --performance-compare --snapshots /var/snapshots
+```text
+VM Health Summary
+=================
+[INFO] Hostname: vm-prod-01
+[INFO] CPU cores: 8
+[INFO] CPU load average: 1.62, 1.48, 1.31
+[OK] CPU load is within expected range.
+[OK] Memory usage is healthy (42.31%).
+[OK] Disk usage is healthy (58.00%).
+[OK] Swap usage is within acceptable limits (10%).
+[OK] Root filesystem is accessible.
+[OK] Core system processes are running.
 
-# Shows percentage changes from average
+Overall VM Health Status: HEALTHY
+The virtual machine appears to be operating normally.
 ```
 
-### 9. Health History
+## Advanced usage
+
+### JSON output
 
 ```bash
-# Display health status history
-./vm_health_check.sh --health-history --snapshots /var/snapshots
-
-# Shows timeline of status changes
+./vm_health_check.sh --json
 ```
 
-## Complete Production Setup
+This outputs a structured JSON payload that can be used by monitoring tools, dashboards, or custom scripts.
+
+### Logging
 
 ```bash
-#!/bin/bash
-# /usr/local/bin/vm_monitor.sh
-
-SCRIPT=/opt/vm-health-checker/vm_health_check.sh
-SNAPSHOT_DIR=/var/lib/vm_health/snapshots
-REPORT_DIR=/var/lib/vm_health/reports
-LOG_FILE=/var/log/vm_health.log
-WEBHOOK=https://hooks.slack.com/services/YOUR/WEBHOOK
-EMAIL=ops-team@company.com
-
-# Create directories
-mkdir -p "$SNAPSHOT_DIR" "$REPORT_DIR"
-
-# Run health check with all features
-"$SCRIPT" \
-  --snapshots "$SNAPSHOT_DIR" \
-  --json \
-  --output-dir "$REPORT_DIR" \
-  --log "$LOG_FILE" \
-  --email "$EMAIL" \
-  --alert-webhook "$WEBHOOK" \
-  --threshold cpu=75 memory=80 disk=85
+./vm_health_check.sh --log /var/log/vm_health.log
 ```
 
-### Crontab Setup
+### Custom thresholds
 
 ```bash
-# Run every 5 minutes (data collection)
-*/5 * * * * /usr/local/bin/vm_monitor.sh
-
-# Analyze trends daily (at 2 AM)
-0 2 * * * /opt/vm-health-checker/vm_health_check.sh --snapshots /var/lib/vm_health/snapshots --trending 7d --log /var/log/vm_health.log
-
-# Generate reports weekly (every Sunday)
-0 0 * * 0 /opt/vm-health-checker/vm_health_check.sh --detailed-report --output-dir /var/lib/vm_health/reports --snapshots /var/lib/vm_health/snapshots
+./vm_health_check.sh --threshold cpu=70 memory=80 disk=85 swap=40
 ```
 
-## Metrics Explained
-
-| Metric | Source | Threshold | Alert Level |
-|--------|--------|-----------|-------------|
-| CPU Load | `/proc/uptime` | 80% per core | DEGRADED |
-| Memory Usage | `/proc/meminfo` | 80% | DEGRADED / 95% CRITICAL |
-| Disk Usage | `df` | 80% | DEGRADED / 95% CRITICAL |
-| Swap Usage | `/proc/meminfo` | 50% | DEGRADED |
-| File Descriptors | `/proc/self/fd` | N/A | INFO |
-| Temperature | `/sys/class/thermal/` | N/A | INFO |
-
-## Exit Codes
-
-- `0` - VM is HEALTHY
-- `1` - VM is DEGRADED (warnings detected)
-- `2` - VM is CRITICAL (critical issues detected)
-- `3` - Unknown status
-
-## Command Reference
+### Email alerting
 
 ```bash
-./vm_health_check.sh explain                    # Detailed explanation
-./vm_health_check.sh --json                    # JSON output
-./vm_health_check.sh --log FILE                # Log to file
-./vm_health_check.sh --threshold cpu=75       # Set threshold
-./vm_health_check.sh --email EMAIL            # Email alerts
-./vm_health_check.sh --output-dir DIR         # Save reports
-./vm_health_check.sh --alert-webhook URL      # Webhook alerts
-./vm_health_check.sh --trending [7d|30d|90d]  # Trending analysis
-./vm_health_check.sh --performance-compare    # Compare to avg
-./vm_health_check.sh --health-history         # Show history
-./vm_health_check.sh --snapshots DIR          # Enable snapshots
-./vm_health_check.sh --detailed-report        # HTML report
-./vm_health_check.sh --help                   # Show help
+./vm_health_check.sh --email admin@example.com
+```
+
+### Webhook alerting
+
+```bash
+./vm_health_check.sh --alert-webhook https://hooks.slack.com/services/your/webhook/url
+```
+
+### Snapshot and trend analysis
+
+```bash
+./vm_health_check.sh --snapshots /var/lib/vm_health/snapshots --trending 7d
+```
+
+This allows you to collect health snapshots over time and analyze trends such as average memory usage or peak disk usage.
+
+### HTML report generation
+
+```bash
+./vm_health_check.sh --detailed-report --output-dir /var/reports/vm-health
+```
+
+This creates a readable report for documentation or operational review.
+
+## Exit codes
+
+The script uses standard exit codes for automation:
+
+- `0` = HEALTHY
+- `1` = DEGRADED
+- `2` = CRITICAL
+- `3` = Unknown or unsupported status
+
+## Requirements
+
+The script is primarily intended for Linux-based systems and expects standard utilities such as:
+
+- `bash`
+- `grep`
+- `awk`
+- `sed`
+- `df`
+- `ps`
+- `nproc`
+
+For some advanced features, optional commands may be required, including:
+
+- `mail` for email alerts
+- `curl` for webhook notifications
+- `systemctl` for service checks (if you extend the script)
+
+## Example cron setup
+
+```bash
+# Run the check every 5 minutes
+*/5 * * * * /path/to/vm_health_check.sh --log /var/log/vm_health.log
 ```
 
 ## Troubleshooting
 
-### Email not sending
-```bash
-which mail  # Verify mail is installed
-systemctl status postfix  # Check mail service
-echo "Test" | mail -s "Test" your@email.com  # Test
-```
+### Permission denied
 
-### Webhook alerts failing
-```bash
-curl -X POST -H 'Content-type: application/json' \
-  --data '{"text":"test"}' YOUR_WEBHOOK_URL
-```
-
-### Permission issues
 ```bash
 chmod +x vm_health_check.sh
-sudo chown root:root vm_health_check.sh
-sudo mv vm_health_check.sh /usr/local/bin/
 ```
 
-## Performance Impact
+### No output or script fails on Linux minimal systems
 
-- Minimal CPU usage (< 1%)
-- Memory footprint: ~5-10MB
-- Disk I/O: Negligible
-- Safe for production use
-- Can run every 5 minutes without impact
+Make sure the system has the required utilities installed:
 
-## Contributing
+```bash
+which bash awk grep df ps nproc
+```
 
-Contributions are welcome! Submit issues and pull requests on GitHub.
+### Email alerts not sending
+
+Check whether `mail` is installed and configured:
+
+```bash
+which mail
+```
 
 ## License
 
-MIT License - See LICENSE file
+MIT License
 
-## Support
+## Repository
 
-For issues, documentation, or feature requests, visit:
 https://github.com/akshigour12/vm-health-checker
